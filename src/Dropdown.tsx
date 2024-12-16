@@ -15,6 +15,7 @@ export function Dropdown<T>(props: DropdownProps<T>) {
           {props.items.map((item, k) => (
             <li
               key={k}
+              onMouseDown={(e) => e.stopPropagation()}
               onClick={() => {
                 props.onSelect(item);
               }}

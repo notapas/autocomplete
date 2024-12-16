@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Dropdown } from "./Dropdown";
 import "./autocomplete.css";
 import { useFetch } from "./useFetch";
-import {debounce} from './utils';
+import { debounce } from "./utils";
 
 type AutocompleteProps<T> = {
   onItemSelected: (v: T) => unknown;
@@ -31,19 +31,18 @@ export function Autocomplete<T>(props: AutocompleteProps<T>) {
     setOpen(false);
   };
 
-  const onClickOutside = () => {
-    if (open) {
-      setOpen(() => false);
-    }
-  };
-
   useEffect(() => {
+    const onClickOutside = () => {
+      if (open) {
+        setOpen(false);
+      }
+    };
     document.addEventListener("mousedown", onClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", onClickOutside);
     };
-  }, []);
+  }, [open]);
 
   return (
     <div className="container">
