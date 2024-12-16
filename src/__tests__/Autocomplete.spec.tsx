@@ -5,9 +5,6 @@ import "@testing-library/jest-dom";
 const mockedDropdownText = "Mocked Dropdown component";
 const item = { id: Date.now(), firstName: "Foo", lastName: "Bar" };
 
-jest.mock("../Dropdown", () => ({
-  Dropdown: () => <div>{mockedDropdownText}</div>,
-}));
 jest.mock("../useFetch", () => ({
   useFetch: () => ({
     request: () => Promise.resolve(),
@@ -35,13 +32,11 @@ describe("Autocomplete", () => {
   });
 
   it("Should render Dropdown component if open state = true", async () => {
-    fireEvent.change(input, { target: { value: "ab" } });
-    expect(await screen.findByText(mockedDropdownText)).toBeInTheDocument();
+    fireEvent.change(input, { target: { value: "te" } });
+    expect(await screen.findByText("test")).toBeInTheDocument();
   });
 
-  it("", async () => {
-    jest.unmock("../Dropdown");
-    await import("../Dropdown");
+  it("Input should be filled with the clicked element text", async () => {
     cleanup();
     render(
       <Autocomplete
@@ -51,12 +46,31 @@ describe("Autocomplete", () => {
       />
     );
 
-    //jest.unmock("../Dropdown");
-    //await import("../Dropdown");
-    fireEvent.change(input, { target: { value: "te" } });
+    const search = screen.getByLabelText("autocomplete input");
+    fireEvent.change(search, { target: { value: "te" } });
 
     const element = await screen.findByText("test");
     fireEvent.click(element);
-    expect(input).toHaveValue("test");
+    expect(search).toHaveValue("test");
+  });
+
+  it("Should close dropdown clicking outside", async () => {
+    cleanup();
+    render(
+      <Autocomplete
+        onItemSelected={() => {}}
+        renderItem={() => "test"}
+        source="test"
+      />
+    );
+
+    const search = screen.getByLabelText("autocomplete input");
+    fireEvent.change(search, { target: { value: "te" } });
+    const dropdown = await screen.findByText("test");
+    expect(dropdown).toBeInTheDocument();
+    const element = document.body;
+    fireEvent.mouseDown(element, {});
+
+    expect(dropdown).not.toBeInTheDocument();
   });
 });
